@@ -1,16 +1,14 @@
 #!/bin/sh
-# push.sh — publie les surfaces du module selon les réglages : widget barre + dock latéral + alertes
+# push.sh — publie les surfaces du module selon les réglages : widget barre, dock latéral, alertes
 # Réglages arrivent en env (LUVUS_SETTING_*) ; appliquer un changement = réactiver le module
 cd "$(dirname "$0")" || exit 1
 BIN="${LUVUS_BIN_PATH:-luvus}"
 ID="${LUVUS_BAR_ID:-stackmon}"
 DOCK_ID="pk:stackmon"
 
-BAR="${LUVUS_SETTING_BAR:-true}"
-DOCK="${LUVUS_SETTING_DOCK:-true}"
-REGION="${LUVUS_SETTING_REGION:-bottom-right}"
-case "$REGION" in top-right|bottom-right) ;; *) REGION="bottom-right" ;; esac
-[ "$BAR" = "true" ] || REGION="off"
+# affichage exclusif : barre en bas/droite, dock latéral, ou notifications seules
+DISPLAY="${LUVUS_SETTING_DISPLAY:-bottom-right}"
+case "$DISPLAY" in bottom-right|top-right|dock|notifications) ;; *) DISPLAY="bottom-right" ;; esac
 NOTIF="${LUVUS_SETTING_NOTIFICATIONS:-true}"
 SEUIL="${LUVUS_SETTING_RAM_THRESHOLD:-2}"
 case "$SEUIL" in ''|*[!0-9]*) SEUIL=2 ;; esac
@@ -69,14 +67,16 @@ TOTAL_HUM=${REST%% *}
 TOTAL_CPU=${REST##* }
 
 # widget barre : le push (re)crée le widget ; le move applique la région (push --region ne repositionne pas)
-case "$REGION" in
-  off) "$BIN" bar move --id "$ID" --region off ;;
-  *)   "$BIN" bar push --id "$ID" --content "$CONTENT" --compact-content "$COMPACT" || exit 1
-       "$BIN" bar move --id "$ID" --region "$REGION" ;;
+case "$DISPLAY" in
+  bottom-right|top-right)
+    "$BIN" bar push --id "$ID" --content "$CONTENT" --compact-content "$COMPACT" || exit 1
+    "$BIN" bar move --id "$ID" --region "$DISPLAY" ;;
+  *)
+    "$BIN" bar move --id "$ID" --region off 2>/dev/null ;;
 esac
 
-# dock latéral — déplaçable gauche/droite dans Settings → Layout ; vide si la fonction est coupée
-if [ "$DOCK" = "true" ]; then
+# dock latéral — côté choisi dans Settings → Layout ; vide sauf en mode dock
+if [ "$DISPLAY" = "dock" ]; then
   "$BIN" ui dock push --id "$DOCK_ID" --title STACK --rows "$ROWS"
 else
   "$BIN" ui dock push --id "$DOCK_ID" --title STACK --rows '[]'

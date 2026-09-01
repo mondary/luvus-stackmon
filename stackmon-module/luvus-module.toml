@@ -59,23 +59,11 @@ min = 2
 max = 120
 
 [[settings]]
-key = "bar"
-title = "Widget dans la barre"
-type = "bool"
-default = true
-
-[[settings]]
-key = "region"
-title = "Emplacement du widget"
+key = "display"
+title = "Affichage"
 type = "enum"
-options = ["bottom-right", "top-right"]
+options = ["bottom-right", "top-right", "dock", "notifications"]
 default = "bottom-right"
-
-[[settings]]
-key = "dock"
-title = "Panneau latéral (STACK)"
-type = "bool"
-default = true
 
 [[settings]]
 key = "notifications"
