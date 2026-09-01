@@ -1,0 +1,17 @@
+id = "pk.project-icon"
+name = "Project Icon"
+version = "0.1.0"
+min_luvus_version = "0.13.4"
+description = "Affiche l'icône JPG ou PNG présente à la racine du projet dans un pane Luvus."
+
+[[panes]]
+id = "icon"
+title = "Project Icon"
+placement = "overlay"
+command = ["sh", "icon.sh"]
+
+[[actions]]
+id = "open"
+title = "Afficher l'icône du projet"
+contexts = ["workspace", "pane"]
+command = ["sh", "open.sh"]
