@@ -2,9 +2,7 @@ id = "pk.stackmon"
 name = "Stack Monitor"
 version = "0.1.0"
 min_luvus_version = "0.13.4"
-description = "RAM/CPU du stack terminal + agents (ghostty, omp, opencode, luvus, herdr) : widget barre, dock latéral, pane TUI et alertes."
-
-# --- Surfaces -----------------------------------------------------------
+description = "RAM/CPU du stack terminal + agents (ghostty, omp, opencode, luvus, herdr) : widget barre, dock latéral et TUI."
 
 [[bars]]
 id = "stackmon"
@@ -23,16 +21,8 @@ title = "Stack Monitor"
 placement = "overlay"
 command = ["sh", "tui"]
 
-# --- Cycle de vie -------------------------------------------------------
-
 [[startup]]
 command = ["sh", "loop.sh"]
-
-[[events]]
-on = "pane.agent_status_changed"
-command = ["sh", "agent-notify.sh"]
-
-# --- Actions ------------------------------------------------------------
 
 [[actions]]
 id = "refresh"
@@ -45,42 +35,9 @@ title = "Ouvrir Stack Monitor (TUI)"
 contexts = ["pane"]
 command = ["sh", "open-tui.sh"]
 
-# --- Réglages -----------------------------------------------------------
-# Chaque surface a son interrupteur ; les valeurs sont injectées en env
-# (LUVUS_SETTING_*) au démarrage des commandes — changer un réglage se
-# reflète au prochain cycle disable/enable du module.
-
-[[settings]]
-key = "interval"
-title = "Intervalle de rafraîchissement (s)"
-type = "number"
-default = 10
-min = 2
-max = 120
-
 [[settings]]
 key = "display"
 title = "Affichage"
 type = "enum"
-options = ["bottom-right", "top-right", "dock", "notifications"]
+options = ["bottom-right", "top-right", "dock"]
 default = "bottom-right"
-
-[[settings]]
-key = "notifications"
-title = "Alertes de dépassement RAM"
-type = "bool"
-default = true
-
-[[settings]]
-key = "ram-threshold"
-title = "Seuil d'alerte RAM (Go)"
-type = "number"
-default = 2
-min = 1
-max = 64
-
-[[settings]]
-key = "agent-notifications"
-title = "Notifier quand un agent est bloqué"
-type = "bool"
-default = true

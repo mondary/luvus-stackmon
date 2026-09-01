@@ -1,21 +1,18 @@
 #!/bin/sh
-# push.sh — publie les surfaces du module selon les réglages : widget barre, dock latéral, alertes
-# Réglages arrivent en env (LUVUS_SETTING_*) ; appliquer un changement = réactiver le module
+# push.sh — publie le stack selon le réglage Affichage : barre (bas/haut droite) ou dock latéral
 cd "$(dirname "$0")" || exit 1
 BIN="${LUVUS_BIN_PATH:-luvus}"
 ID="${LUVUS_BAR_ID:-stackmon}"
 DOCK_ID="pk:stackmon"
 
-# affichage exclusif : barre en bas/droite, dock latéral, ou notifications seules
-DISPLAY="${LUVUS_SETTING_DISPLAY:-bottom-right}"
-case "$DISPLAY" in bottom-right|top-right|dock|notifications) ;; *) DISPLAY="bottom-right" ;; esac
-NOTIF="${LUVUS_SETTING_NOTIFICATIONS:-true}"
-SEUIL="${LUVUS_SETTING_RAM_THRESHOLD:-2}"
-case "$SEUIL" in ''|*[!0-9]*) SEUIL=2 ;; esac
-SEUIL_MB=$((SEUIL * 1024))
+# réglage lu en direct à chaque push : appliqué au tick suivant, sans réactiver le module
+# ponytail: sed sur la sortie JSON de la CLI — casse si la valeur contenait une quote
+DISPLAY=$("$BIN" module settings pk.stackmon display 2>/dev/null | sed -n 's/.*"value": *"\([^"]*\)".*/\1/p')
+DISPLAY=${DISPLAY:-${LUVUS_SETTING_DISPLAY:-bottom-right}}
+case "$DISPLAY" in bottom-right|top-right|dock) ;; *) DISPLAY="bottom-right" ;; esac
 
-# 4 lignes : content | compact | rows dock | "totalMo totalHumain cpu%"
-METRICS=$(ps -axo rss=,pcpu=,comm= | awk -v seuil="$SEUIL_MB" '
+# 3 lignes : content | compact | rows dock
+METRICS=$(ps -axo rss=,pcpu=,comm= | awk '
   function fmt(mb) {
     s = (mb >= 1024) ? sprintf("%.1f Go", mb/1024) : sprintf("%.0f Mo", mb)
     gsub(/\./, ",", s); return s
@@ -53,18 +50,12 @@ METRICS=$(ps -axo rss=,pcpu=,comm= | awk -v seuil="$SEUIL_MB" '
     if (l > 0) row("Luvus", l/1024, lc)
     if (h > 0) row("Herdr", h/1024, hc)
     totalrow(tm/1024, tc)
-    printf "]\n"
-    printf "%d %s %.0f\n", tm, fmt(tm/1024), tc
+    printf "]"
   }') || exit 1
 
 CONTENT=$(printf '%s\n' "$METRICS" | sed -n 1p)
 COMPACT=$(printf '%s\n' "$METRICS" | sed -n 2p)
 ROWS=$(printf '%s\n' "$METRICS" | sed -n 3p | sed 's/,]/]/')
-TOTALS=$(printf '%s\n' "$METRICS" | sed -n 4p)
-TOTAL_MB=${TOTALS%% *}
-REST=${TOTALS#* }
-TOTAL_HUM=${REST%% *}
-TOTAL_CPU=${REST##* }
 
 # widget barre : le push (re)crée le widget ; le move applique la région (push --region ne repositionne pas)
 case "$DISPLAY" in
@@ -80,12 +71,4 @@ if [ "$DISPLAY" = "dock" ]; then
   "$BIN" ui dock push --id "$DOCK_ID" --title STACK --rows "$ROWS"
 else
   "$BIN" ui dock push --id "$DOCK_ID" --title STACK --rows '[]'
-fi
-
-# alerte RAM : notification bornée quand le seuil est dépassé, nettoyage sinon
-if [ "$NOTIF" = "true" ] && [ "${TOTAL_MB:-0}" -ge "$SEUIL_MB" ]; then
-  "$BIN" ui notification push --level error --dedupe-key stackmon-ram --ttl-ms 8000 \
-    --text "Stack Monitor : RAM ${TOTAL_HUM} (seuil ${SEUIL} Go)"
-else
-  "$BIN" ui notification clear --dedupe-key stackmon-ram 2>/dev/null
 fi
