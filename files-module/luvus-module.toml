@@ -1,0 +1,37 @@
+id = "pk.files"
+name = "Files+"
+version = "0.1.0"
+min_luvus_version = "0.13.4"
+description = "Arborescence du workspace avec icônes Nerd Font et état git par fichier, dans la sidebar."
+
+[[docks]]
+id = "pk:files"
+title = "FILES"
+placement = "sidebar.left"
+
+[[startup]]
+command = ["sh", "refresh.sh"]
+
+[[events]]
+on = "workspace.created"
+command = ["sh", "refresh.sh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["sh", "refresh.sh"]
+
+[[actions]]
+id = "refresh"
+title = "Rafraîchir Files+"
+contexts = ["workspace"]
+command = ["sh", "refresh.sh"]
+
+[[actions]]
+id = "open"
+title = "Ouvrir le fichier"
+command = ["sh", "open.sh"]
+
+[[actions]]
+id = "reveal"
+title = "Révéler dans FILES"
+command = ["sh", "reveal.sh"]

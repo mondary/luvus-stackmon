@@ -1,0 +1,32 @@
+id = "pk.gitgraph"
+name = "GitGraph"
+version = "0.1.0"
+min_luvus_version = "0.13.4"
+description = "Graphe git (toutes branches) dans la sidebar, clic sur un commit pour copier son SHA."
+
+[[docks]]
+id = "pk:gitgraph"
+title = "GIT"
+placement = "sidebar.right"
+
+[[startup]]
+command = ["sh", "refresh.sh"]
+
+[[events]]
+on = "workspace.created"
+command = ["sh", "refresh.sh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["sh", "refresh.sh"]
+
+[[actions]]
+id = "refresh"
+title = "Rafraîchir GitGraph"
+contexts = ["workspace"]
+command = ["sh", "refresh.sh"]
+
+[[actions]]
+id = "copy-sha"
+title = "Copier le SHA du commit"
+command = ["sh", "copy-sha.sh"]

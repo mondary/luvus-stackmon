@@ -1,0 +1,32 @@
+id = "pk.diff"
+name = "Diff+"
+version = "0.1.0"
+min_luvus_version = "0.13.4"
+description = "Fichiers modifiés du workspace avec icônes, stats +ajouts/−suppressions et ouverture directe du diff."
+
+[[docks]]
+id = "pk:diff"
+title = "DIFF"
+placement = "sidebar.right"
+
+[[startup]]
+command = ["sh", "refresh.sh"]
+
+[[events]]
+on = "workspace.created"
+command = ["sh", "refresh.sh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["sh", "refresh.sh"]
+
+[[actions]]
+id = "refresh"
+title = "Rafraîchir Diff+"
+contexts = ["workspace"]
+command = ["sh", "refresh.sh"]
+
+[[actions]]
+id = "open"
+title = "Ouvrir le diff du fichier"
+command = ["sh", "open.sh"]
