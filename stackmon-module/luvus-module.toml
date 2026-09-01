@@ -46,6 +46,9 @@ contexts = ["pane"]
 command = ["sh", "open-tui.sh"]
 
 # --- Réglages -----------------------------------------------------------
+# Chaque surface a son interrupteur ; les valeurs sont injectées en env
+# (LUVUS_SETTING_*) au démarrage des commandes — changer un réglage se
+# reflète au prochain cycle disable/enable du module.
 
 [[settings]]
 key = "interval"
@@ -56,11 +59,23 @@ min = 2
 max = 120
 
 [[settings]]
+key = "bar"
+title = "Widget dans la barre"
+type = "bool"
+default = true
+
+[[settings]]
 key = "region"
 title = "Emplacement du widget"
 type = "enum"
-options = ["bottom-right", "top-right", "off"]
+options = ["bottom-right", "top-right"]
 default = "bottom-right"
+
+[[settings]]
+key = "dock"
+title = "Panneau latéral (STACK)"
+type = "bool"
+default = true
 
 [[settings]]
 key = "notifications"
@@ -75,3 +90,9 @@ type = "number"
 default = 2
 min = 1
 max = 64
+
+[[settings]]
+key = "agent-notifications"
+title = "Notifier quand un agent est bloqué"
+type = "bool"
+default = true

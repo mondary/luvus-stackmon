@@ -2,6 +2,7 @@
 # agent-notify.sh — notification quand un agent passe en "blocked"
 # Hook sur pane.agent_status_changed ; payload JSON en LUVUS_MODULE_EVENT_JSON
 BIN="${LUVUS_BIN_PATH:-luvus}"
+[ "${LUVUS_SETTING_AGENT_NOTIFICATIONS:-true}" = "true" ] || exit 0
 [ "${LUVUS_MODULE_EVENT:-}" = "pane.agent_status_changed" ] || exit 0
 
 # ponytail: extraction sed du JSON — casse si un champ contient une virgule/quote
