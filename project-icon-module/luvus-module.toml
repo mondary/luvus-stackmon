@@ -10,8 +10,17 @@ title = "Project Icon"
 placement = "overlay"
 command = ["sh", "icon.sh"]
 
+[[startup]]
+command = ["sh", "startup.sh"]
+
 [[actions]]
 id = "open"
 title = "Afficher l'icône du projet"
 contexts = ["workspace", "pane"]
 command = ["sh", "open.sh"]
+
+[[settings]]
+key = "show-pane"
+title = "Afficher le pane icône au démarrage"
+type = "bool"
+default = true
