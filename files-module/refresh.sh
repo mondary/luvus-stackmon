@@ -6,27 +6,34 @@ CWD="${LUVUS_WORKSPACE_CWD:-$PWD}"
 MAX_ROWS=40
 PRUNE="-name .git -o -name node_modules -o -name .venv -o -name venv -o -name dist -o -name build -o -name __pycache__ -o -name vendor"
 
+# icônes Nerd Font via octal UTF-8 (les littéraux PUA sont strips par certains outils)
+I_DIR='\357\201\273';   I_FILE='\357\205\233'; I_TS='\356\230\250';  I_JS='\356\235\216'
+I_REACT='\356\236\272'; I_PY='\356\234\274';   I_JSON='\356\230\213'; I_MD='\357\222\212'
+I_IMG='\357\207\205';   I_LOCK='\357\200\243'; I_SH='\357\222\211';   I_YML='\356\230\225'
+I_CONF='\357\200\223';  I_CSS='\356\235\211';  I_HTML='\356\234\266'; I_RS='\356\236\250'
+I_GO='\356\230\246';    I_DB='\357\207\200'
+
 # icône Nerd Font selon type/extension
 icon_of() {
   case "$1" in
-    dir)         printf '' ;;
-    *.ts|*.tsx)  printf '' ;;
-    *.js|*.mjs|*.cjs) printf '' ;;
-    *.jsx)       printf '' ;;
-    *.py)        printf '' ;;
-    *.json)      printf '' ;;
-    *.md|*.mdx)  printf '' ;;
-    *.png|*.jpg|*.jpeg|*.gif|*.svg|*.webp|*.ico) printf '' ;;
-    *.lock)      printf '' ;;
-    *.sh|*.zsh)  printf '' ;;
-    *.yml|*.yaml) printf '' ;;
-    *.toml|*.ini|*.conf|*.cfg|*.env) printf '' ;;
-    *.css|*.scss) printf '' ;;
-    *.html)      printf '' ;;
-    *.rs)        printf '' ;;
-    *.go)        printf '' ;;
-    *.sql|*.db|*.sqlite) printf '' ;;
-    *)           printf '' ;;
+    dir)         printf "$I_DIR" ;;
+    *.ts|*.tsx)  printf "$I_TS" ;;
+    *.js|*.mjs|*.cjs) printf "$I_JS" ;;
+    *.jsx)       printf "$I_REACT" ;;
+    *.py)        printf "$I_PY" ;;
+    *.json)      printf "$I_JSON" ;;
+    *.md|*.mdx)  printf "$I_MD" ;;
+    *.png|*.jpg|*.jpeg|*.gif|*.svg|*.webp|*.ico) printf "$I_IMG" ;;
+    *.lock)      printf "$I_LOCK" ;;
+    *.sh|*.zsh)  printf "$I_SH" ;;
+    *.yml|*.yaml) printf "$I_YML" ;;
+    *.toml|*.ini|*.conf|*.cfg|*.env) printf "$I_CONF" ;;
+    *.css|*.scss) printf "$I_CSS" ;;
+    *.html)      printf "$I_HTML" ;;
+    *.rs)        printf "$I_RS" ;;
+    *.go)        printf "$I_GO" ;;
+    *.sql|*.db|*.sqlite) printf "$I_DB" ;;
+    *)           printf "$I_FILE" ;;
   esac
 }
 

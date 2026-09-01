@@ -15,7 +15,8 @@ BRANCH=$(git branch --show-current 2>/dev/null)
 AHEAD=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo 0)
 BEHIND=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo 0)
 
-ROWS="{\"text\":\" $BRANCH  ↑$AHEAD ↓$BEHIND\",\"dot\":\"done\"},"
+I_BRANCH=$(printf '\357\220\230')   # nf-oct-git_branch
+ROWS="{\"text\":\"$I_BRANCH $BRANCH  ↑$AHEAD ↓$BEHIND\",\"dot\":\"done\"},"
 
 T=$(mktemp)
 git log --graph --oneline --all --decorate --color=never --max-count="$LIMIT" 2>/dev/null |
