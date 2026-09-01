@@ -30,3 +30,4 @@ key = "region"
 title = "Emplacement du widget"
 type = "string"
 default = "bottom-right"
+options = ["bottom-right", "top-right", "off"]
