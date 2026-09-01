@@ -4,6 +4,15 @@ cd "$(dirname "$0")" || exit 1
 BIN="${LUVUS_BIN_PATH:-luvus}"
 ID="${LUVUS_BAR_ID:-stackmon}"
 
+# région lue à chaque push : bottom-right (défaut), top-right, ou off
+# ponytail: extraction sed du JSON (pas de flag raw côté luvus) — casserait si la valeur contenait une virgule
+REGION=$("$BIN" module settings pk.stackmon region 2>/dev/null | sed -n 's/.*"value": *"\([^"]*\)".*/\1/p')
+case "$REGION" in
+  top-right)    ;;
+  off)          "$BIN" bar move --id "$ID" --region off >/dev/null 2>&1; exit 0 ;;
+  *)            REGION="bottom-right" ;;
+esac
+
 CONTENT=$(ps -axo rss=,pcpu=,comm= | awk '
   function fmt(mb) {
     s = (mb >= 1024) ? sprintf("%.1f Go", mb/1024) : sprintf("%.0f Mo", mb)
@@ -28,4 +37,6 @@ CONTENT=$(ps -axo rss=,pcpu=,comm= | awk '
     printf "]"
   }') || exit 1
 
-exec "$BIN" bar push --id "$ID" --content "$CONTENT"
+"$BIN" bar push --id "$ID" --content "$CONTENT"
+# le push (re)crée le widget ; le move applique la région (push --region ne repositionne pas)
+"$BIN" bar move --id "$ID" --region "$REGION"

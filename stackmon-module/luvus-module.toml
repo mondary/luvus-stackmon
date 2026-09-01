@@ -24,3 +24,9 @@ type = "number"
 default = 10
 min = 2
 max = 120
+
+[[settings]]
+key = "region"
+title = "Emplacement du widget"
+type = "string"
+default = "bottom-right"
