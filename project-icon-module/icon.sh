@@ -2,7 +2,8 @@
 # icon.sh — affiche l'image de la racine du workspace dans un pane Luvus
 set -eu
 
-root="${LUVUS_WORKSPACE_CWD:-$PWD}"
+root="${LUVUS_WORKSPACE_CWD:-}"
+[ -n "$root" ] || root=$(cd "$(dirname "$0")/.." && pwd)
 cd "$root" || exit 1
 
 icon=''
