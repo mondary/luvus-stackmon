@@ -1,0 +1,26 @@
+id = "pk.stackmon"
+name = "Stack Monitor"
+version = "0.1.0"
+min_luvus_version = "0.13.4"
+description = "RAM/CPU du stack terminal + agents (ghostty, omp, opencode, luvus, herdr) dans la Luvus Bar."
+
+[[bars]]
+id = "stackmon"
+title = "Stack Monitor"
+region = "bottom-right"
+
+[[startup]]
+command = ["sh", "loop.sh"]
+
+[[actions]]
+id = "refresh"
+title = "Rafraîchir Stack Monitor"
+command = ["sh", "push.sh"]
+
+[[settings]]
+key = "interval"
+title = "Intervalle de rafraîchissement (s)"
+type = "number"
+default = 10
+min = 2
+max = 120

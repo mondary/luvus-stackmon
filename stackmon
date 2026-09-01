@@ -1,0 +1,49 @@
+#!/bin/zsh
+# stackmon: RAM/CPU du stack terminal + agents (ghostty, omp, opencode, luvus, herdr)
+# Usage: stackmon [once]
+while true; do
+  [ "$1" = "once" ] || printf '\033[H\033[2J'
+  ps -axo rss=,pcpu=,comm= | awk '
+  BEGIN { while (("date +%H:%M:%S" | getline l) > 0) now = l }
+  function fmt(mb) {
+    s = (mb >= 1024) ? sprintf("%.1f Go", mb/1024) : sprintf("%.0f Mo", mb)
+    gsub(/\./, ",", s); return s
+  }
+  function ramc(mb) { return (mb >= 2048) ? "\033[31m" : (mb >= 512) ? "\033[33m" : "\033[32m" }
+  function cpuc(c)  { return (c >= 60)   ? "\033[31m" : (c >= 30)   ? "\033[33m" : "\033[32m" }
+  {
+    n = split($3, p, "/"); b = tolower(p[n]); sub(/[ (].*/, "", b)
+    if (b == "ghostty")        { g += $1; gc += $2 }
+    else if (b == "omp")       { o += $1; oc += $2 }
+    else if (b == "opencode")  { e += $1; ec += $2 }
+    else if (b == "luvus")     { l += $1; lc += $2 }
+    else if (b == "herdr")     { h += $1; hc += $2 }
+  }
+  END {
+    printf "  \033[1m%-10s %9s %8s\033[0m\n", "STACK", "RAM", "CPU"
+    tm = g+o+e+l+h; tc = gc+oc+ec+lc+hc
+    r["ghostty"]=g;   c["ghostty"]=gc
+    r["omp"]=o;       c["omp"]=oc
+    r["opencode"]=e;  c["opencode"]=ec
+    r["luvus"]=l;     c["luvus"]=lc
+    r["herdr"]=h;     c["herdr"]=hc
+    m = 0
+    for (k in r) if (length(k) > m) m = length(k)
+    m = (m > 10) ? m : 10
+    nproc["ghostty"]="ghostty"; nproc["omp"]="omp"; nproc["opencode"]="opencode"; nproc["luvus"]="luvus"; nproc["herdr"]="herdr"
+    order[1]="ghostty"; order[2]="omp"; order[3]="opencode"; order[4]="luvus"; order[5]="herdr"
+    for (i = 1; i <= 5; i++) {
+      k = order[i]; mb = r[k]/1024
+      rs = fmt(mb); cs = sprintf("%.1f %%", c[k]); gsub(/\./, ",", cs)
+      printf "  %-*s %s%9s\033[0m %s%8s\033[0m\n", m, k, ramc(mb), rs, cpuc(c[k]), cs
+    }
+    printf "  "
+    for (i = 0; i < m+19; i++) printf "─"
+    printf "\n"
+    ts = fmt(tm/1024); cts = sprintf("%.1f %%", tc); gsub(/\./, ",", cts)
+    printf "  \033[1m%-*s %s%9s\033[0m %s%8s\033[0m\n", m, "TOTAL", ramc(tm/1024), ts, cpuc(tc), cts
+    printf "  \033[2m%s\033[0m\n", now
+  }'
+  [ "$1" = "once" ] && break
+  sleep 2
+done
